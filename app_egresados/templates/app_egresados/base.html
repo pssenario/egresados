@@ -1,0 +1,72 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0B3553">
+  <link rel="icon" href="data:,">
+  <title>{% block title %}CIEA · Seguimiento de egresados{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'app_egresados/css/app_egresados.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegación principal">
+      <a class="brand" href="{% url 'app_reportes:dashboard' %}">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span><strong>SENA</strong><small>Regional La Guajira</small></span>
+      </a>
+      <div class="sidebar-label">CENTRO INDUSTRIAL Y DE ENERGÍAS ALTERNATIVAS</div>
+      <nav class="main-nav">
+        <a href="{% url 'app_reportes:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}is-active{% endif %}"><span class="nav-symbol">▦</span>Resumen</a>
+        <a href="{% url 'app_egresados:egresado_list' %}" class="nav-link {% if 'egresado' in request.resolver_match.url_name %}is-active{% endif %}"><span class="nav-symbol">◎</span>Egresados</a>
+        {% if user.is_superuser %}
+          <a href="{% url 'app_seguimiento:seguimientos_pendientes' %}" class="nav-link"><span class="nav-symbol">◷</span>Validar seguimientos</a>
+          <a href="{% url 'app_programa:programa_list' %}" class="nav-link"><span class="nav-symbol">⌘</span>Programas</a>
+          <a href="{% url 'app_auditoria:bitacora' %}" class="nav-link"><span class="nav-symbol">≡</span>Bitácora</a>
+          <a href="{% url 'admin:index' %}" class="nav-link"><span class="nav-symbol">⚙</span>Administración</a>
+        {% else %}
+          {% for group in user.groups.all %}
+            {% if group.name|lower == 'administrador' or group.name|lower == 'funcionario' %}
+              <a href="{% url 'app_seguimiento:seguimientos_pendientes' %}" class="nav-link"><span class="nav-symbol">◷</span>Validar seguimientos</a>
+            {% endif %}
+            {% if group.name|lower == 'administrador' or group.name|lower == 'funcionario' or group.name|lower == 'visor' %}
+              <a href="{% url 'app_programa:programa_list' %}" class="nav-link"><span class="nav-symbol">⌘</span>Programas</a>
+            {% endif %}
+            {% if group.name|lower == 'egresado' %}
+              <a href="{% url 'app_seguimiento:autogestion_create' %}" class="nav-link"><span class="nav-symbol">↻</span>Actualizar situación</a>
+            {% endif %}
+            {% if group.name|lower == 'administrador' %}
+              <a href="{% url 'app_auditoria:bitacora' %}" class="nav-link"><span class="nav-symbol">≡</span>Bitácora</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </nav>
+      <div class="sidebar-footer">
+        <span class="status-dot"></span><span>Centro activo</span>
+        <span class="regional-tag">GUAJIRA</span>
+      </div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumb"><span>CIEA</span><span class="breadcrumb-separator">/</span><strong>{% block breadcrumb %}Panel de gestión{% endblock %}</strong></div>
+        <div class="user-menu">
+          <span class="user-avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</span>
+          <span class="user-name">{{ user.get_full_name|default:user.username }}<small>{% for group in user.groups.all %}{{ group.name }}{% empty %}{% if user.is_superuser %}Administrador{% else %}Usuario{% endif %}{% endfor %}</small></span>
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="logout-button" type="submit" aria-label="Cerrar sesión" title="Cerrar sesión">↗</button></form>
+        </div>
+      </header>
+      <section class="page-content">
+        {% if messages %}<div class="messages" aria-live="polite">{% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+        {% block content %}{% endblock %}
+      </section>
+      <footer class="page-footer"><span>Centro Industrial y de Energías Alternativas</span><span>SENA · Regional La Guajira</span></footer>
+    </main>
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

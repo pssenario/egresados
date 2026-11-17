@@ -1,0 +1,1 @@
+"""Reporting views aggregate existing domain models without owning data tables."""

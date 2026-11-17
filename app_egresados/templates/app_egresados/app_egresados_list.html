@@ -1,0 +1,23 @@
+{% extends 'app_egresados/base.html' %}
+{% block title %}Egresados · CIEA{% endblock %}
+{% block breadcrumb %}Egresados{% endblock %}
+{% block content %}
+<div class="page-heading page-heading-split"><div><span class="eyebrow">DIRECTORIO INSTITUCIONAL</span><h1>Egresados</h1><p>Consulta de trayectorias académicas y situación actual.</p></div><div class="heading-actions">{% if puede_exportar %}<a class="button button-secondary" href="{% url 'app_reportes:egresado_export' %}?{{ request.GET.urlencode }}"><span aria-hidden="true">↓</span> Exportar CSV</a>{% endif %}{% if puede_crear %}<a class="button button-primary" href="{% url 'app_egresados:egresado_create' %}"><span aria-hidden="true">＋</span> Crear egresado</a>{% endif %}</div></div>
+<form method="get" class="filter-panel">
+  <div class="filter-grid">
+    <div class="field"><label for="filter-name">Nombre</label><input id="filter-name" name="nombre" value="{{ filtros.nombre }}" placeholder="Buscar por nombre"></div>
+    <div class="field"><label for="filter-document">Documento</label><input id="filter-document" name="documento" value="{{ filtros.documento }}" placeholder="Número de documento"></div>
+    <div class="field"><label for="filter-program">Programa</label><select id="filter-program" name="programa"><option value="">Todos los programas</option>{% for programa in programas %}<option value="{{ programa.pk }}" {% if filtros.programa == programa.pk|stringformat:'s' %}selected{% endif %}>{{ programa.nombre }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="filter-state">Situación</label><select id="filter-state" name="ocupacion"><option value="">Todas</option>{% for value,label in ocupaciones %}<option value="{{ value }}" {% if filtros.ocupacion == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="filter-from">Titulado desde</label><input id="filter-from" type="date" name="desde" value="{{ filtros.desde }}"></div>
+    <div class="field"><label for="filter-to">Titulado hasta</label><input id="filter-to" type="date" name="hasta" value="{{ filtros.hasta }}"></div>
+  </div>
+  {% if es_admin %}<label class="check-line"><input type="checkbox" name="inactivos" value="1" {% if filtros.inactivos == '1' %}checked{% endif %}> Incluir registros inactivos</label>{% endif %}
+  <div class="filter-footer"><span>{{ egresados|length }} resultado{{ egresados|length|pluralize:'s' }}</span><div><a class="button button-quiet" href="{% url 'app_egresados:egresado_list' %}">Limpiar</a><button class="button button-primary" type="submit">Aplicar filtros</button></div></div>
+</form>
+<div class="table-shell directory-table"><table><thead><tr><th>EGRESADO</th><th>DOCUMENTO</th><th>PROGRAMA / FICHA</th><th>CONTACTO</th><th>SITUACIÓN</th><th>ESTADO</th><th></th></tr></thead><tbody>
+{% for egresado in egresados %}<tr><td><a class="table-person" href="{% url 'app_egresados:egresado_detail' egresado.pk %}"><span class="person-avatar">{{ egresado.nombres|slice:':1'|upper }}{{ egresado.apellidos|slice:':1'|upper }}</span><strong>{{ egresado.nombre_completo }}</strong></a></td><td>{{ egresado.tipo_documento }} {{ egresado.numero_documento }}</td><td>{% for trayectoria in egresado.trayectorias.all|slice:':1' %}<span>{{ trayectoria.programa.nombre }}</span><small class="table-subline">Ficha {{ trayectoria.ficha|default:'—' }}</small>{% empty %}—{% endfor %}</td><td><span>{{ egresado.correo_lista|default:'—' }}</span><small class="table-subline">{{ egresado.telefono_lista|default:'—' }}</small></td><td><span class="status-pill status-neutral">{{ egresado.get_estado_ocupacional_display }}</span></td><td>{% if egresado.activo %}<span class="status-indicator"><i></i>Activo</span>{% else %}<span class="status-pill status-muted">Inactivo</span>{% endif %}</td><td><a class="icon-link" href="{% url 'app_egresados:egresado_detail' egresado.pk %}" aria-label="Ver detalle">↗</a></td></tr>
+{% empty %}<tr><td colspan="7"><div class="empty-state"><span class="empty-icon">⌕</span><strong>No encontramos resultados</strong><p>Prueba con otros filtros o términos de búsqueda.</p></div></td></tr>{% endfor %}
+</tbody></table></div>
+{% if es_visor %}<p class="privacy-note"><span>i</span> Los datos de contacto se muestran enmascarados para proteger la información personal.</p>{% endif %}
+{% endblock %}

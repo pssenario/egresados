@@ -1,0 +1,31 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: S
+      - generic [ref=e6]:
+        - strong [ref=e7]: SENA
+        - generic [ref=e8]: Regional La Guajira
+    - generic [ref=e9]:
+      - text: CENTRO INDUSTRIAL Y DE ENERGÍAS ALTERNATIVAS
+      - heading "Trayectorias que impulsan a La Guajira." [level=1] [ref=e10]
+      - paragraph [ref=e11]: Gestión y seguimiento de egresados
+    - generic [ref=e12]:
+      - text: 11°32' N 72°54' O
+      - generic [ref=e13]: RIOHACHA · COLOMBIA
+  - generic [ref=e15]:
+    - text: PORTAL INSTITUCIONAL
+    - heading "Bienvenido" [level=2] [ref=e16]
+    - paragraph [ref=e17]: Ingresa con tu cuenta institucional para continuar.
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: Usuario
+        - textbox "Usuario" [active] [ref=e21]
+      - generic [ref=e22]:
+        - generic [ref=e23]: Contraseña
+        - textbox "Contraseña" [ref=e24]
+      - button "Ingresar" [ref=e25] [cursor=pointer]:
+        - text: Ingresar
+        - generic [aria-hidden] [ref=e26]: →
+    - generic [ref=e27]:
+      - generic [ref=e28]: ✓
+      - text: Acceso protegido · SENA Colombia
